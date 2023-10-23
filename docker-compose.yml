@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  go-service:
+    build: ./go
+    container_name: golang
+    restart: always
+    # stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    volumes:
+      - ./go/source:/go/tmp/src
+    depends_on:
+      - rabbitmq
+    ports:
+      - "4444:4444"
+    networks:
+      - etl
+
+  php-service:
+    build: ./php
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./php/app:/var/www/app
+    networks:
+      - etl
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "15672:15672"  # Веб-интерфейс RabbitMQ
+      - "5672:5672"    # AMQP порт
+    networks:
+      - etl
+
+networks:
+  etl:
