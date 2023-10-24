@@ -19,5 +19,9 @@ $callback = function ($msg) {
 $channel->basic_consume($queue_name, '', false, true, false, false, $callback);
 
 while (count($channel->callbacks)) {
-    $channel->wait();
+    try {
+        $channel->wait();
+    } catch (\Throwable $e) {
+        echo $e->getMessage() . PHP_EOL;
+    }
 }
